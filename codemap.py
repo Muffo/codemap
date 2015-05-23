@@ -1,5 +1,6 @@
 import png
 from pygments.formatter import Formatter
+from collections import deque
 
 
 """
@@ -39,8 +40,8 @@ class MinimapFormatter(Formatter):
                 self.styles[token] = (0, 0, 0)
 
     def format(self, tokensource, outfile):
-        code_map = []
-        row = []
+        code_map = deque()
+        row = deque()
 
         for ttype, value in tokensource:
 
@@ -51,7 +52,7 @@ class MinimapFormatter(Formatter):
             # if this is a new line I just add new row
             if value == "\n":
                 code_map.append(row)
-                row = []
+                row = deque()
                 continue
 
             # handle multi-lines comments
@@ -61,9 +62,8 @@ class MinimapFormatter(Formatter):
                 for text in text_rows[:-1]:
                     pixels = [self.styles[ttype] if c != " " else self.background_color for c in text]
                     row.extend(pixels)
-
                     code_map.append(row)
-                    row = []
+                    row = deque()
 
                 value = text_rows[-1]
 
@@ -85,12 +85,12 @@ class MinimapFormatter(Formatter):
         # create the image:
         # - code lines are 2 pixels wide
         # - empty line is 1 pixel wide
-        img = []
+        img = deque()
         empty_row = self.background_color * width
 
         for row in code_map:
             row_len = len(row)
-            flat_row = [item for sublist in row for item in sublist]
+            flat_row = deque([item for sublist in row for item in sublist])
             flat_row.extend(self.background_color * (width - row_len))
             img.append(flat_row)
             img.append(flat_row)
@@ -116,7 +116,7 @@ def list_files1(dir):
         if (len(files) > 0):
             for file in files:
                 r.append(subdir + "/" + file)
-    return [] #r
+    return r
 
 
 def list_files(dir):
@@ -135,7 +135,7 @@ def list_files(dir):
 
 # list_files("/Users/Muffo/Devel/Repos")
 
-dir = "/Users/Muffo/Devel/Repos/fullyfeedly"
+dir = "/Users/Muffo/Devel/Repos/CodeMirror"
 
 for file_name in list_files(dir):
 
