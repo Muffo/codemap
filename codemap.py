@@ -76,7 +76,11 @@ class MinimapFormatter(Formatter):
         height = len(code_map)
         width = max([len(row) for row in code_map])
 
-        print "Size: %d x %d" % (width, height)
+        if width > 0 and height > 0:
+            print "Size: %d x %d" % (width, height)
+        else:
+            print "Image is empty"
+            return
 
         # create the image:
         # - code lines are 2 pixels wide
@@ -97,20 +101,62 @@ class MinimapFormatter(Formatter):
         w.write(outfile, img)
 
 
-
-
 from pygments import highlight
 from pygments.lexers import get_lexer_for_filename
-
-file_name = "png.py"
-
-with open(file_name, 'r') as code_file:
-    code = code_file.read()
+from pygments.util import ClassNotFound
 
 
-lexer = get_lexer_for_filename(file_name)
+import os
+
+def list_files1(dir):
+    r = []
+    subdirs = [x[0] for x in os.walk(dir)]
+    for subdir in subdirs:
+        files = os.walk(subdir).next()[2]
+        if (len(files) > 0):
+            for file in files:
+                r.append(subdir + "/" + file)
+    return [] #r
 
 
-outfile = open('test.png', 'wb')
-highlight(code, lexer, MinimapFormatter(style='solarizeddark'), outfile)
-outfile.close()
+def list_files(dir):
+    result = []
+    for root, dirs, files in os.walk(dir):
+        files = [f for f in files if not f[0] == '.']
+        dirs[:] = [d for d in dirs if not d[0] == '.']
+
+        for f in files:
+            result.append(root + "/" + f)
+
+    return result
+
+# file_name = "png.py"
+
+
+# list_files("/Users/Muffo/Devel/Repos")
+
+dir = "/Users/Muffo/Devel/Repos/fullyfeedly"
+
+for file_name in list_files(dir):
+
+    print "Processing file: " + file_name, " ... ",
+
+    with open(file_name, 'r') as code_file:
+        code = code_file.read()
+
+    try:
+        lexer = get_lexer_for_filename(file_name)
+
+        image_file = 'images/' + os.path.relpath(file_name, dir) + ".png"
+
+        image_dir = os.path.dirname(image_file)
+        if not os.path.exists(image_dir):
+            os.makedirs(image_dir)
+
+        outfile = open(image_file, 'wb')
+        highlight(code, lexer, MinimapFormatter(style='solarizeddark'), outfile)
+        outfile.close()
+
+    except ClassNotFound:
+        print "Cannot find lexer"
+        continue
