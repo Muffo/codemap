@@ -1,6 +1,7 @@
+from collections import deque
+import json
 import png
 from pygments.formatter import Formatter
-from collections import deque
 
 
 """
@@ -135,7 +136,8 @@ def list_files(dir):
 
 # list_files("/Users/Muffo/Devel/Repos")
 
-dir = "/Users/Muffo/Devel/Repos/CodeMirror"
+dir = "/Users/Muffo/Devel/Repos/git"
+images = []
 
 for file_name in list_files(dir):
 
@@ -149,14 +151,19 @@ for file_name in list_files(dir):
 
         image_file = 'images/' + os.path.relpath(file_name, dir) + ".png"
 
+        images.append(image_file)
+
         image_dir = os.path.dirname(image_file)
         if not os.path.exists(image_dir):
             os.makedirs(image_dir)
 
-        outfile = open(image_file, 'wb')
-        highlight(code, lexer, MinimapFormatter(style='solarizeddark'), outfile)
-        outfile.close()
+        with open(image_file, 'wb') as outfile:
+            highlight(code, lexer, MinimapFormatter(style='solarizeddark'), outfile)
 
     except ClassNotFound:
         print "Cannot find lexer"
         continue
+
+
+with open('images/images.json', 'w') as outfile:
+    json.dump(images, outfile)
