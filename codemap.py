@@ -1,3 +1,4 @@
+import argparse
 from collections import deque
 import json
 import png
@@ -131,39 +132,63 @@ def list_files(dir):
 
     return result
 
-# file_name = "png.py"
+
+def run(argv):
+
+    parser = argparse.ArgumentParser(add_help=False)
+    
+    parser.add_argument("-i", "--input", default=".",
+                        help="Path of the folder containing the source files")
+    
+    parser.add_argument("-o", "--output", default="./codemap",
+                        help="Path of the folder where the images will be stored")
+    
+    parser.add_argument("-s", "--style", default="",
+                        help="Style of the output (see Pygments style)")
+
+    parser.add_argument("-D", "--debug", action="store_true",
+                        help="Print debug output")
+    
+    parser.description = """
+        Transform a set the source files in minimap images.
+        """
+    
+    conf = parser.parse_args(argv)
+    print conf
+
+    images = []
+    
+    for file_name in list_files(conf.input):
+
+        if conf.debug:
+            print "Processing file: " + file_name, " ... ",
+    
+        with open(file_name, 'r') as code_file:
+            code = code_file.read()
+    
+        try:
+            lexer = get_lexer_for_filename(file_name)
+    
+            image_file = os.path.join(conf.output, os.path.relpath(file_name, conf.input) + ".png")
+    
+            images.append(image_file)
+    
+            image_dir = os.path.dirname(image_file)
+            if not os.path.exists(image_dir):
+                os.makedirs(image_dir)
+    
+            with open(image_file, 'wb') as outfile:
+                highlight(code, lexer, MinimapFormatter(style=conf.style), outfile)
+    
+        except ClassNotFound:
+            print "Cannot find lexer"
+            continue
+
+    with open(os.path.join(conf.output, 'images.json'), 'w') as outfile:
+        json.dump(images, outfile)
 
 
-# list_files("/Users/Muffo/Devel/Repos")
+if __name__ == "__main__":
+    import sys
+    run(sys.argv[1:])
 
-dir = "/Users/Muffo/Devel/Repos/git"
-images = []
-
-for file_name in list_files(dir):
-
-    print "Processing file: " + file_name, " ... ",
-
-    with open(file_name, 'r') as code_file:
-        code = code_file.read()
-
-    try:
-        lexer = get_lexer_for_filename(file_name)
-
-        image_file = 'images/' + os.path.relpath(file_name, dir) + ".png"
-
-        images.append(image_file)
-
-        image_dir = os.path.dirname(image_file)
-        if not os.path.exists(image_dir):
-            os.makedirs(image_dir)
-
-        with open(image_file, 'wb') as outfile:
-            highlight(code, lexer, MinimapFormatter(style='solarizeddark'), outfile)
-
-    except ClassNotFound:
-        print "Cannot find lexer"
-        continue
-
-
-with open('images/images.json', 'w') as outfile:
-    json.dump(images, outfile)
