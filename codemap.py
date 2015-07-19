@@ -110,20 +110,9 @@ from pygments.util import ClassNotFound
 
 import os
 
-def list_files1(dir):
-    r = []
-    subdirs = [x[0] for x in os.walk(dir)]
-    for subdir in subdirs:
-        files = os.walk(subdir).next()[2]
-        if (len(files) > 0):
-            for file in files:
-                r.append(subdir + "/" + file)
-    return r
-
-
-def list_files(dir):
+def list_files(dir_path):
     result = []
-    for root, dirs, files in os.walk(dir):
+    for root, dirs, files in os.walk(dir_path):
         files = [f for f in files if not f[0] == '.']
         dirs[:] = [d for d in dirs if not d[0] == '.']
 
@@ -135,22 +124,23 @@ def list_files(dir):
 
 def run(argv):
 
-    parser = argparse.ArgumentParser(add_help=False)
+    parser = argparse.ArgumentParser(add_help=True)
     
     parser.add_argument("-i", "--input", default=".",
-                        help="Path of the folder containing the source files")
+                        help="Path of the folder containing the source files.\nDefault: the current folder.")
     
     parser.add_argument("-o", "--output", default="./codemap",
-                        help="Path of the folder where the images will be stored")
+                        help="Path of the folder where the images will be stored.\n" +
+                             "Default: a folder called codemap inside the current folder.")
     
     parser.add_argument("-s", "--style", default="",
                         help="Style of the output (see Pygments style)")
 
-    parser.add_argument("-D", "--debug", action="store_true",
+    parser.add_argument("-d", "--debug", action="store_true",
                         help="Print debug output")
     
     parser.description = """
-        Transform a set the source files in minimap images.
+        Transform your source files in codemap images.
         """
     
     conf = parser.parse_args(argv)
