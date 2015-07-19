@@ -1,8 +1,8 @@
 # Codemap
 
-*Look at your code at a distance*
+*Look at your code from a distance*
 
-Codemap creates a pixel image. This is the output of codemap when used with the its own code:
+Codemap creates a pixel image of your source files. This is the output of codemap when used with the its own code:
 
 ![Codemap](https://raw.githubusercontent.com/Muffo/codemap/master/codemap.py.png "Codemap")
 
