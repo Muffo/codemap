@@ -2,14 +2,14 @@
 
 *Look at your code from a distance*
 
-Codemap creates a pixel image of your source files. This is the output of codemap when used with the its own code:
+**Codemap** creates *pixel images* of your source files. This is the output of **Codemap** when used with its own code:
 
 ![Codemap](https://raw.githubusercontent.com/Muffo/codemap/master/codemap.py.png "Codemap")
 
 
 ### Installation
 
-Codemap is contained in a single Python script that can be easily downloaded and executed in your terminal.
+**Codemap** is contained in a single Python script that can be easily downloaded and executed in your terminal.
 
 
 You also need [PyPNG](https://github.com/drj11/pypng) and [Pygments](http://pygments.org)
@@ -55,7 +55,7 @@ For example, to install Solarized run:
 
 
 
-**Example:** to generate the image above:
+**Example:** run the following command to generate the image above
 
     python -i /path/to/codemap -o /path/to/outputFolder -s solarizeddark
 
